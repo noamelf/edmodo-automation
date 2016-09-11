@@ -3,6 +3,7 @@ from lxml import html
 from collections import namedtuple
 
 BASE_URL = 'https://www.edmodo.com'
+LOGIN_URL = '{}/index/ajax-login'.format(BASE_URL)
 ASSIGNMENT_URL = '{}/assignment/ajax-get-submission-info'.format(BASE_URL)
 FILES_URL = '{}/file'.format(BASE_URL)
 GRADE_URL = '{}/assignment/ajax-grade-assignment'.format(BASE_URL)
@@ -33,8 +34,8 @@ class EdmodoGroup:
             'username': user,
             'password': pswd
         }
-        s.post(BASE_URL, data=user_data)
-        r = s.get(BASE_URL.format('/home'))
+        s.post(LOGIN_URL, data=user_data)
+        r = s.get(BASE_URL + '/home')
         s.headers['x-csrf-token'] = r.headers['x-csrf-token']
 
     def get_group_members(self):
@@ -47,7 +48,8 @@ class EdmodoGroup:
         return members
 
     def get_members_assignments(self, assignment_id):
-        if not self.members:
+        members = self.members
+        if not members:
             members = self.get_group_members()
 
         s = self._s
